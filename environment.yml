@@ -1,0 +1,10 @@
+name: myenv
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - flask
+  - numpy
+  - pip
+  - pip:
+    - other-python-packages
