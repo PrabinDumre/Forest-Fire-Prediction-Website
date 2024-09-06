@@ -2,9 +2,6 @@
 
 This project is a web application designed to predict the likelihood of forest fires using a machine learning model. It leverages a dataset and provides an intuitive interface to input key features, which are used to generate fire risk predictions.
 
-Sample Output:
-![Alt text](/Users/prabindumre/Documents/Projects/Forest-Fire-Prediction-Website/Output Screenshot.jpeg)
-
 
 # Features
 Interactive User Interface: Built using HTML, CSS, and JavaScript for smooth interaction.<br>
