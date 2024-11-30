@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forest Fire Prevention</title>
+
+    <!-- Add emoji favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧯</text></svg>">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css2/style.css') }}" type="text/css" rel="stylesheet"/>
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.5s ease;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        /* Default state (light green) */
+        .navbar, 
+        .footer {
+            background-color: #81C784 !important; /* Light green color */
+            padding: 0.5rem 1rem !important;
+            transition: background-color 0.5s ease;
+        }
+        
+        /* Safe state */
+        body.safe-bg {
+            background: linear-gradient(
+                rgba(46, 125, 50, 0.2),
+                rgba(46, 125, 50, 0.2)
+            ),
+            url("{{ url_for('static', filename='images/safe-forest.jpg') }}");
+            background-size: cover;
+        }
+        body.safe-bg .navbar,
+        body.safe-bg .footer {
+            background-color: #2E7D32 !important; /* Darker green for safe state */
+        }
+        
+        /* Danger state */
+        body.danger-bg {
+            background: linear-gradient(
+                rgba(183, 28, 28, 0.1),
+                rgba(183, 28, 28, 0.1)
+            ),
+            url("{{ url_for('static', filename='images/forest-fire.jpg') }}");
+            background-size: cover;
+        }
+        body.danger-bg .navbar,
+        body.danger-bg .footer {
+            background-color: rgba(183, 28, 28, 0.8) !important;
+        }
+        
+        .main-content {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+        .footer {
+            margin-top: auto;
+        }
+        .content-wrapper {
+            background-color: rgba(255, 255, 255, 0.75);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 0;
+            height: 100%;
+        }
+        .animation-container {
+            position: relative;
+            width: 100%;
+            margin: 0;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .animation-wrapper {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .animation-sequence {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            animation: fireSequence 18s steps(1) infinite;
+        }
+
+        .caption-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+            height: 30px;
+        }
+
+        @keyframes fireSequence {
+            0%, 16.66% {
+                background-image: url("{{ url_for('static', filename='images/animation/safe-forest.jpg') }}");
+            }
+            16.66%, 33.32% {
+                background-image: url("{{ url_for('static', filename='images/animation/fire-start.jpg') }}");
+            }
+            33.32%, 49.98% {
+                background-image: url("{{ url_for('static', filename='images/animation/fire-spread.jpg') }}");
+            }
+            49.98%, 66.64% {
+                background-image: url("{{ url_for('static', filename='images/animation/firefighters.jpg') }}");
+            }
+            66.64%, 83.3% {
+                background-image: url("{{ url_for('static', filename='images/animation/extinguishing.jpg') }}");
+            }
+            83.3%, 100% {
+                background-image: url("{{ url_for('static', filename='images/animation/normal-forest.jpg') }}");
+            }
+        }
+
+        .prediction-message {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto;
+            animation: alertBlink 1s infinite;
+            width: fit-content;
+        }
+
+        .danger-message {
+            background-color: rgba(183, 28, 28, 0.5);
+            color: white;
+        }
+
+        .safe-message {
+            background-color: rgba(46, 125, 50, 0.7);
+            color: white;
+        }
+
+        @keyframes alertBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .form-label {
+            color: #666;
+            font-weight: normal !important;
+            opacity: 0.8;
+        }
+
+        .form-control::placeholder {
+            color: #999;
+            opacity: 0.5;
+        }
+
+        .form-control {
+            color: #666;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .form-control:focus {
+            color: #666;
+            opacity: 0.8;
+            box-shadow: 0 0 0 0.2rem rgba(129, 199, 132, 0.25);
+        }
+
+        /* To ensure text remains readable with more transparent background */
+        .content-wrapper h1,
+        .content-wrapper h5,
+        .content-wrapper .form-label,
+        .content-wrapper .text-center {
+            text-shadow: 0 0 2px rgba(255, 255, 255, 0.5); /* Optional: adds slight text shadow to improve readability */
+        }
+
+        /* Make text content more opaque */
+        .content-wrapper h1 {
+            opacity: 1 !important;
+            color: #000;
+            text-shadow: none;
+        }
+
+        .content-wrapper h5 {
+            opacity: 1 !important;
+            color: #333;
+            text-shadow: none;
+        }
+
+        .content-wrapper .form-label {
+            opacity: 1 !important;
+            color: #333;
+            text-shadow: none;
+        }
+
+        .content-wrapper .text-center {
+            opacity: 1 !important;
+            color: #000;
+            text-shadow: none;
+        }
+
+        /* Remove the previous text shadow styles */
+        .content-wrapper h1,
+        .content-wrapper h5,
+        .content-wrapper .form-label,
+        .content-wrapper .text-center {
+            text-shadow: none;
+        }
+
+        /* Make the prediction text more visible */
+        .text-danger, .text-success {
+            opacity: 1 !important;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .animation-container {
+                height: 320px;
+                margin-bottom: 1.5rem;
+            }
+            
+            .animation-wrapper {
+                height: 270px;
+            }
+        }
+
+        /* Update prediction message styles */
+        .prediction-message-large {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 40px auto;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: backgroundBlink 2s ease-in-out infinite;
+        }
+
+        .danger-message {
+            background-color: rgba(183, 28, 28, 0.9);
+            color: white;
+        }
+
+        .safe-message {
+            background-color: rgba(46, 125, 50, 0.9);
+            color: white;
+        }
+
+        @keyframes backgroundBlink {
+            0%, 100% { 
+                background-color: rgba(183, 28, 28, 0.9);
+            }
+            50% { 
+                background-color: rgba(183, 28, 28, 0.7);
+            }
+        }
+
+        .safe-message {
+            animation: safeBackgroundBlink 2s ease-in-out infinite;
+        }
+
+        @keyframes safeBackgroundBlink {
+            0%, 100% { 
+                background-color: rgba(46, 125, 50, 0.9);
+            }
+            50% { 
+                background-color: rgba(46, 125, 50, 0.7);
+            }
+        }
+
+        .message-text,
+        .message-icon,
+        .sub-text,
+        .probability,
+        .impact-info,
+        .impact-item {
+            animation: none;
+        }
+
+        .message-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .message-text {
+            line-height: 1.3;
+        }
+
+        .sub-text {
+            font-size: 20px;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+
+        .probability {
+            font-size: 16px;
+            margin-top: 15px;
+            padding: 8px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Center the new prediction button */
+        .prediction-controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background-color: #2196F3;
+            border: none;
+            padding: 10px 25px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .prediction-message-large {
+                width: 95%;
+                padding: 20px;
+                font-size: 24px;
+            }
+
+            .message-icon {
+                font-size: 40px;
+            }
+
+            .sub-text {
+                font-size: 18px;
+            }
+
+            .probability {
+                width: 90%;
+                font-size: 14px;
+            }
+        }
+
+        /* For better vertical alignment with the right column */
+        .col-12.col-md-5 {
+            padding-top: 0.5rem;
+        }
+
+        .forest-info-section {
+            background-color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+
+        .forest-title {
+            color: #2E7D32;
+            font-weight: 600;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .forest-description {
+            color: #424242;
+            font-size: 1rem;
+            line-height: 1.5;
+            max-width: 900px;
+            margin: 0 auto;
+            margin-bottom: 1rem;
+        }
+
+        .benefit-item {
+            padding: 1rem;
+            background-color: rgba(129, 199, 132, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .benefit-item i {
+            font-size: 1.5rem;
+            color: #2E7D32;
+            margin-bottom: 0.5rem;
+        }
+
+        .benefit-item h5 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .benefit-item p {
+            font-size: 0.85rem;
+            margin-bottom: 0;
+            line-height: 1.3;
+        }
+
+        @media (max-width: 768px) {
+            .forest-info-section {
+                padding: 1rem 0;
+            }
+
+            .forest-title {
+                font-size: 1.75rem;
+            }
+
+            .forest-description {
+                font-size: 1rem;
+            }
+
+            .benefit-item {
+                padding: 1rem;
+            }
+        }
+
+        .impact-info {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .impact-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .impacts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .impact-item {
+            padding: 10px;
+        }
+
+        .impact-item i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .impact-item p {
+            font-size: 0.9rem;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.3;
+        }
+
+        @media (max-width: 768px) {
+            .impacts-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .impact-item {
+                padding: 8px;
+            }
+
+            .impact-item i {
+                font-size: 1.3rem;
+            }
+
+            .impact-item p {
+                font-size: 0.85rem;
+            }
+        }
+
+        .footer {
+            padding: 0.75rem 0 !important;
+        }
+
+        .footer h6 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem !important;
+        }
+
+        .footer small {
+            font-size: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .footer .text-center.mt-3 {
+            margin-top: 0.5rem !important;
+        }
+
+        .container.py-4 {
+            padding-top: 1.5rem !important;
+            padding-bottom: 1.5rem !important;
+        }
+
+        /* Adjust overall container heights and spacing */
+        .forest-info-section {
+            padding: 0.5rem 0;  /* Reduced padding */
+            margin-bottom: 0.5rem;
+        }
+
+        .forest-description {
+            font-size: 0.9rem;  /* Smaller font */
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+            max-width: 800px;
+        }
+
+        .benefit-item {
+            padding: 0.75rem;  /* Reduced padding */
+        }
+
+        .benefit-item p {
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+
+        /* Adjust animation container */
+        .animation-container {
+            height: 300px;  /* Reduced height */
+            margin-top: 0.5rem;
+        }
+
+        .animation-wrapper {
+            height: 250px;  /* Reduced height */
+        }
+
+        /* Adjust main content spacing */
+        .container.main-content {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        .content-wrapper {
+            padding: 1.5rem;  /* Reduced padding */
+        }
+
+        /* Adjust form spacing */
+        .form-control {
+            margin-bottom: 0.5rem;
+            padding: 0.4rem 0.75rem;  /* Smaller input fields */
+        }
+
+        /* Make footer more compact */
+        .footer {
+            padding: 0.5rem 0 !important;
+            margin-top: 0.5rem;
+        }
+
+        .footer .row {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Adjust container padding */
+        .container.py-4 {
+            padding-top: 0.75rem !important;
+            padding-bottom: 0.75rem !important;
+        }
+
+        /* Adjust title sizes */
+        .forest-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        h1.text-center {
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        h5.text-center {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Adjust navbar */
+        .navbar {
+            padding: 0.25rem 1rem !important;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem !important;
+        }
+
+        /* Adjust benefit items grid */
+        .forest-benefits .row {
+            margin-top: 0.5rem !important;
+        }
+
+        .benefit-item i {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .benefit-item h5 {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+
+        /* Adjust animation container size to match form height */
+        .animation-container {
+            height: 420px;  /* Increased to match form height */
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .animation-wrapper {
+            height: 370px;  /* Increased proportionally */
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        /* Adjust the caption text */
+        .caption-text {
+            font-size: 16px;
+            height: 25px;
+            margin-top: 5px;
+        }
+
+        /* Adjust the content wrapper padding */
+        .content-wrapper {
+            padding: 1.75rem;
+            height: 420px;  /* Match animation container height */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .animation-container {
+                height: 350px;
+                margin-bottom: 1.5rem;
+            }
+            
+            .animation-wrapper {
+                height: 300px;
+            }
+
+            .content-wrapper {
+                height: auto;
+                padding: 1.5rem;
+            }
+        }
+
+        /* Update button styles */
+        .btn-danger, .btn-success {
+            border: none;
+            padding: 10px 25px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger {
+            background-color: #d32f2f;  /* Red color for danger */
+        }
+
+        .btn-danger:hover {
+            background-color: #b71c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(183, 28, 28, 0.3);
+        }
+
+        .btn-success {
+            background-color: #2E7D32;  /* Green color for safe */
+        }
+
+        .btn-success:hover {
+            background-color: #1B5E20;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
+        }
+
+        /* Remove the previous btn-primary styles */
+        .btn-primary {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="{{ body_class if body_class else '' }}">
+    <!-- Navbar - Simplified -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fs-3 fw-bold" href="#">
+                <i class="fas fa-fire-extinguisher me-2"></i>
+                Forest Fire Prevention
+            </a>
+        </div>
+    </nav>
+
+    <!-- Modify the forest-info-section to only show when there's no prediction -->
+    {% if not pred %}
+    <div class="forest-info-section">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-10">
+                    <div class="info-content text-center">
+                        <h2 class="forest-title mb-3">Protecting Our Green Legacy</h2>
+                        <p class="forest-description">
+                            Forests are the Earth's lungs, providing essential oxygen and absorbing harmful CO2. They're home to 80% of the world's terrestrial biodiversity and support the livelihoods of 1.6 billion people. Every year, we lose millions of hectares to forest fires, threatening this vital ecosystem.
+                        </p>
+                        <div class="forest-benefits mt-3">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="benefit-item">
+                                        <i class="fas fa-wind mb-2"></i>
+                                        <h5>Climate Balance</h5>
+                                        <p>Regulates temperature and rainfall patterns</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="benefit-item">
+                                        <i class="fas fa-leaf mb-2"></i>
+                                        <h5>Biodiversity</h5>
+                                        <p>Habitat for countless species of flora and fauna</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="benefit-item">
+                                        <i class="fas fa-tint mb-2"></i>
+                                        <h5>Water Security</h5>
+                                        <p>Natural water filtration and flood prevention</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="container main-content py-3">
+        <div class="row justify-content-between align-items-start">
+            <!-- Animation Column (Left) - Only show when no prediction -->
+            <div class="col-12 col-md-5">
+                {% if not pred %}
+                <div class="animation-container">
+                    <div class="animation-wrapper">
+                        <div class="animation-sequence"></div>
+                    </div>
+                    <div class="caption-text" data-captions='[
+                        "Natural Forest",
+                        "Starting of Fire in forest",
+                        "Fire increasing Rapidly",
+                        "Checking the condition of fire",
+                        "Heros Stopping Fire",
+                        "Cured Forest After Fire"
+                    ]'></div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Prediction System Column (Right) -->
+            <div class="{% if pred %}col-12{% else %}col-12 col-md-6{% endif %}">
+                {% if not pred %}
+                <!-- Content Wrapper - Only show when no prediction -->
+                <div class="content-wrapper">
+                    <h1 class="text-center text-danger mb-2 fw-bold">
+                        Fire Prevention System
+                    </h1>
+                    <h5 class="text-center text-muted mb-3">Advanced ML-based Forest Fire Prediction</h5>
+
+                    <form action='/predict' method="post" class="mt-3">
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <label class="form-label">Oxygen</label>
+                                <input type="text" class="form-control" name="Oxygen" placeholder="Oxygen content in ppm" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Temperature</label>
+                                <input type="text" class="form-control" name="Temperature" placeholder="Temperature in Celsius" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Humidity</label>
+                                <input type="text" class="form-control" name="Humidity" placeholder="Humidity %" required>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn btn-success px-4">Predict Probability</button>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <!-- Show large prediction message when there is a prediction -->
+                {% if 'Danger' in pred %}
+                <div class="prediction-message-large danger-message">
+                    <div class="message-icon">⚠️</div>
+                    <div class="message-text">
+                        DANGER! DANGER!
+                        <div class="sub-text">Fire Alarm System Activated</div>
+                        <div class="probability">{{pred}}</div>
+                        <div class="impact-info mt-4">
+                            <h5 class="impact-title">Potential Impacts of Forest Fire:</h5>
+                            <div class="impacts-grid">
+                                <div class="impact-item">
+                                    <i class="fas fa-skull-crossbones"></i>
+                                    <p>Loss of Wildlife Habitat and Biodiversity</p>
+                                </div>
+                                <div class="impact-item">
+                                    <i class="fas fa-smog"></i>
+                                    <p>Air Pollution and Health Risks</p>
+                                </div>
+                                <div class="impact-item">
+                                    <i class="fas fa-temperature-high"></i>
+                                    <p>Increased Carbon Emissions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="prediction-message-large safe-message">
+                    <div class="message-icon">✅</div>
+                    <div class="message-text">
+                        SAFE CONDITION
+                        <div class="sub-text">No Risk of Fire</div>
+                        <div class="probability">{{pred}}</div>
+                        <div class="impact-info mt-4">
+                            <h5 class="impact-title">Benefits of a Healthy Forest:</h5>
+                            <div class="impacts-grid">
+                                <div class="impact-item">
+                                    <i class="fas fa-lungs"></i>
+                                    <p>Clean Air Production and CO2 Absorption</p>
+                                </div>
+                                <div class="impact-item">
+                                    <i class="fas fa-paw"></i>
+                                    <p>Thriving Wildlife and Ecosystem</p>
+                                </div>
+                                <div class="impact-item">
+                                    <i class="fas fa-cloud-rain"></i>
+                                    <p>Natural Climate Regulation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <!-- Update the button container -->
+                <div class="prediction-controls">
+                    {% if 'Danger' in pred %}
+                    <a href="/" class="btn btn-danger">Make New Prediction</a>
+                    {% else %}
+                    <a href="/" class="btn btn-success">Make New Prediction</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 text-center text-md-start mb-2 mb-md-0">
+                    <h6 class="mb-1">About Us</h6>
+                    <small>Protecting forests through advanced prediction systems</small>
+                </div>
+                <div class="col-md-4 text-center mb-2 mb-md-0">
+                    <h6 class="mb-1">Contact Info</h6>
+                    <small>Email: info@forestfire.com<br>Phone: +977 123456789</small>
+                </div>
+                <div class="col-md-4 text-center text-md-end">
+                    <h6 class="mb-1">Emergency Numbers</h6>
+                    <small>
+                        Police: 100<br>
+                        Fire Brigade: 101
+                    </small>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <small>© 2024 Forest Fire Prevention System | Developed by Prabin Dumre</small>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const captionElement = document.querySelector('.caption-text');
+            if (captionElement) {
+                const captions = JSON.parse(captionElement.dataset.captions);
+                let currentIndex = 0;
+
+                function updateCaption() {
+                    captionElement.textContent = captions[currentIndex];
+                    currentIndex = (currentIndex + 1) % captions.length;
+                }
+
+                updateCaption();
+                setInterval(updateCaption, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
+
