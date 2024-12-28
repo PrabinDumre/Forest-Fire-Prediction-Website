@@ -19,12 +19,6 @@ static/: Contains static files such as CSS and JavaScript.<br>
 requirements.txt: Lists the Python dependencies required for this project.<br>
 app.yaml: Configuration file for deploying the application on platforms like Google Cloud.<br>
 
-
-# Setup Instructions
-Prerequisites
-Python 3.x
-pip (Python package manager)
-
 # Usage
 Enter the required features (such as temperature, humidity, etc.) into the web interface, and the model will predict the likelihood of a forest fire based on the input values.
 
